@@ -8,21 +8,15 @@ import { AppUseSelector } from '@/store';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-//^ redux action
 import { productActions } from '@/store/slice/product-slice';
-
-//^ http request
 import { getAllCartsHandler, getUserHandler } from '@/http/get';
 import { GetCartDataRes, GetUserRes } from '@/http/get/types';
 import { PlaceOrderContext, Product } from '@/http/post/types';
 import { postCheckoutHandler } from '@/http/post';
 import { queryClient } from '@/http';
 
-//^ shadcn-ui
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-//^ components
 import ErrorAlert from '@/components/error-message';
 import Spinner from '@/components/ui-component/spinner/Spinner';
 
@@ -43,22 +37,6 @@ export default function CheckoutPage() {
     gcTime: 0,
     staleTime: Infinity,
   });
-
-  useEffect(() => {
-    if (!cartsIsLoading) {
-      let sumOfPrices = 0.0;
-
-      cartsData?.carts.forEach((cart) => {
-        const cartPrice = parseFloat(cart.prodPrice) * cart.prodQty;
-
-        sumOfPrices += cartPrice;
-      });
-
-      dispatch(productActions.addProdSubTotalHandler(sumOfPrices));
-    }
-
-    // eslint-disable-next-line
-  }, [cartsData, cartsIsLoading]);
 
   const {
     data: getUserData,
@@ -83,7 +61,6 @@ export default function CheckoutPage() {
     mutationKey: ['checkout-order'],
     mutationFn: postCheckoutHandler,
     onSuccess: (data) => {
-      // toast.success(200, { description: data.message });
       Swal.fire({
         title: 'Order Placed Successfully',
         text: data.message,
@@ -98,6 +75,17 @@ export default function CheckoutPage() {
       navigate('/');
     },
   });
+
+  useEffect(() => {
+    if (!cartsIsLoading) {
+      let sumOfPrices = 0.0;
+      cartsData?.carts.forEach((cart) => {
+        const cartPrice = parseFloat(cart.prodPrice) * cart.prodQty;
+        sumOfPrices += cartPrice;
+      });
+      dispatch(productActions.addProdSubTotalHandler(sumOfPrices));
+    }
+  }, [cartsData, cartsIsLoading, dispatch]);
 
   const checkoutOrderHandler = () => {
     const data: PlaceOrderContext = {
@@ -119,11 +107,10 @@ export default function CheckoutPage() {
       {checkoutIsError && (
         <ErrorAlert
           title={`Error code: ${checkoutError?.code || 500}`}
-          subTitle={`Message: ${
-            checkoutError?.info?.error?.message
+          subTitle={`Message: ${checkoutError?.info?.error?.message
               ? checkoutError?.info?.error?.message
               : (checkoutError?.info && checkoutError?.info?.message) || 'Something went wrong'
-          }`}
+            }`}
           onConformed={() => {
             checkoutReset();
           }}
@@ -133,11 +120,10 @@ export default function CheckoutPage() {
       {cartsIsError && (
         <ErrorAlert
           title={`Error code: ${cartsError?.code || 500}`}
-          subTitle={`Message: ${
-            cartsError?.info?.error?.message
+          subTitle={`Message: ${cartsError?.info?.error?.message
               ? cartsError?.info?.error?.message
               : (cartsError?.info && cartsError?.info?.message) || 'Something went wrong'
-          }`}
+            }`}
           onConformed={() => {
             getUserRefetch();
           }}
@@ -147,11 +133,10 @@ export default function CheckoutPage() {
       {getUserIsError && (
         <ErrorAlert
           title={`Error code: ${getUserError?.code || 500}`}
-          subTitle={`Message: ${
-            getUserError?.info?.error?.message
+          subTitle={`Message: ${getUserError?.info?.error?.message
               ? getUserError?.info?.error?.message
               : (getUserError?.info && getUserError?.info?.message) || 'Something went wrong'
-          }`}
+            }`}
           onConformed={() => {
             cartsRefetch();
           }}
@@ -159,106 +144,102 @@ export default function CheckoutPage() {
         />
       )}
       <div className="flex flex-col gap-8">
-        <div>
-          <Card className="relative">
-            <CardHeader>
-              <CardTitle className="text-2xl font-medium">Checkout</CardTitle>
-            </CardHeader>
-            <Separator />
-            <CardContent className="pt-5">
-              <CardDescription className="grid grid-cols-[2fr,1fr] gap-8 text-slate-600 text-base">
-                {cartsIsLoading ? (
-                  <Spinner />
-                ) : (
-                  <>
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <p className="font-semibold text-lg">Delivery Address</p>
-                        {getUserIsLoading ? (
-                          <div className="flex flex-col gap-2">
-                            <Skeleton className="h-5 w-32" />
-                            <Skeleton className="h-5" />
+        <Card className="relative">
+          <CardHeader>
+            <CardTitle className="text-xl sm:text-2xl font-medium">Checkout</CardTitle>
+          </CardHeader>
+          <Separator />
+          <CardContent className="pt-5">
+            <CardDescription className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-8 text-slate-600 text-base">
+              {cartsIsLoading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <div className="flex flex-col gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <p className="font-semibold text-lg">Delivery Address</p>
+                      {getUserIsLoading ? (
+                        <div className="flex flex-col gap-2">
+                          <Skeleton className="h-5 w-32" />
+                          <Skeleton className="h-5" />
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-4 border p-4 rounded-lg">
+                          <p className="flex flex-col gap-4">
+                            <span className="font-bold text-lg">{getUserData?.userData.name}</span>
+                            <span>{getUserData?.userData.address}</span>
+                          </p>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-slate-400">Phone Number</p>
+                            <p>{getUserData?.userData.phone}</p>
                           </div>
-                        ) : (
-                          <div className="flex flex-col gap-4 border p-4 rounded-lg">
-                            <p className="flex flex-col gap-4">
-                              <span className="font-bold text-lg">{getUserData?.userData.name}</span>
-                              <span>{getUserData?.userData.address}</span>
-                            </p>
-                            <div className="flex flex-col gap-1">
-                              <p className="text-slate-400">Phone Number</p>
-                              <p>{getUserData?.userData.phone}</p>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                              <p className="text-slate-400">Email Address</p>
-                              <p>{getUserData?.userData.email}</p>
-                            </div>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-slate-400">Email Address</p>
+                            <p>{getUserData?.userData.email}</p>
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="border rounded-lg p-4 flex flex-col gap-8">
-                      <p className="font-semibold text-lg">Your Order</p>
-                      <div>
-                        <div className="flex justify-between items-center">
-                          <p>Product</p>
-                          <p>Total</p>
+                  </div>
+                  <div className="border rounded-lg p-4 flex flex-col gap-8">
+                    <p className="font-semibold text-lg">Your Order</p>
+                    <div>
+                      <div className="flex justify-between items-center">
+                        <p>Product</p>
+                        <p>Total</p>
+                      </div>
+                      <Separator className="mt-2 mb-4" />
+                      <div className="flex flex-col gap-2">
+                        {cartsData?.carts.map((cart, index) => (
+                          <div key={index} className="flex justify-between w-full">
+                            <p>{`${cart.prodName} x ${cart.prodQty}`}</p>
+                            <p>{`\u20B9 ${parseFloat(cart.prodPrice) * cart.prodQty}`}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <Separator className="mt-2 mb-4" />
+                      <div className="flex flex-col gap-2">
+                        <div className="flex justify-between">
+                          <p className="font-extrabold">Subtotal</p>
+                          <p>{`\u20B9${productTotalPrice}`}</p>
+                        </div>
+                        <div className="flex justify-between">
+                          <p className="font-extrabold">Shipping</p>
+                          <p>{`\u20B9${0}`}</p>
+                        </div>
+                        <div className="flex justify-between">
+                          <p className="font-extrabold">Tax</p>
+                          <p>{`\u20B9${0}`}</p>
                         </div>
                         <Separator className="mt-2 mb-4" />
-                        <div className="flex flex-col gap-2">
-                          {cartsData?.carts.map((cart, index) => {
-                            return (
-                              <div key={index} className="flex justify-between w-full">
-                                <p>{`${cart.prodName} x ${cart.prodQty}`}</p>
-                                <p>{`\u20B9 ${parseFloat(cart.prodPrice) * cart.prodQty}`}</p>
-                              </div>
-                            );
-                          })}
+                        <div className="flex justify-between">
+                          <p className="font-extrabold">Payment Method</p>
+                          <p className="text-sm font-bold">{`COD (Cash On Delivery)`}</p>
                         </div>
                         <Separator className="mt-2 mb-4" />
-                        <div className="flex flex-col gap-2">
-                          <div className="flex justify-between">
-                            <p className="font-extrabold">Subtotal</p>
-                            <p>{`\u20B9${productTotalPrice}`}</p>
-                          </div>
-                          <div className="flex justify-between">
-                            <p className="font-extrabold">Shipping</p>
-                            <p>{`\u20B9${0}`}</p>
-                          </div>
-                          <div className="flex justify-between">
-                            <p className="font-extrabold">Tax</p>
-                            <p>{`\u20B9${0}`}</p>
-                          </div>
-                          <Separator className="mt-2 mb-4" />
-                          <div className="flex justify-between">
-                            <p className="font-extrabold">Payment Method</p>
-                            <p className="text-sm font-bold">{`COD (Cash On Delivery)`}</p>
-                          </div>
-                          <Separator className="mt-2 mb-4" />
-                          <div className="flex justify-between text-2xl text-red-700">
-                            <p className="font-extrabold">Total</p>
-                            <p>{`\u20B9${productTotalPrice}`}</p>
-                          </div>
+                        <div className="flex justify-between text-xl sm:text-2xl text-red-700">
+                          <p className="font-extrabold">Total</p>
+                          <p>{`\u20B9${productTotalPrice}`}</p>
                         </div>
                       </div>
-                      <Button size={'lg'} type="button" onClick={checkoutOrderHandler}>
-                        <span>Checkout</span>
-                        {checkoutIsPending ? <Spinner /> : ''}
-                      </Button>
                     </div>
-                  </>
-                )}
-              </CardDescription>
-            </CardContent>
-            <div
-              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              <Cross2Icon className="h-5 w-5" />
-              <span className="sr-only">Close</span>
-            </div>
-          </Card>
-        </div>
+                    <Button size={'lg'} type="button" onClick={checkoutOrderHandler} className="w-full">
+                      <span>Checkout</span>
+                      {checkoutIsPending ? <Spinner /> : ''}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </CardDescription>
+          </CardContent>
+          <div
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground cursor-pointer"
+            onClick={() => navigate('/')}
+          >
+            <Cross2Icon className="h-5 w-5" />
+            <span className="sr-only">Close</span>
+          </div>
+        </Card>
       </div>
     </>
   );
