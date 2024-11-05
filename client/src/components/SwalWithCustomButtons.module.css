@@ -1,0 +1,54 @@
+.success-btn {
+  display: flex;
+  padding: 0.5625rem 1.8rem !important;
+  justify-content: space-between;
+  align-items: center !important;
+  border: none !important;
+  cursor: pointer !important;
+
+  border-radius: 0.3125rem;
+  background: hsl(164, 95%, 43%) !important;
+
+  color: #FFF !important;
+  font-family: poppins !important;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+
+  text-transform: uppercase;
+
+  transition: 0.3s ease-in-out all;
+}
+
+.success-btn:hover {
+  background: hsl(164, 95%, 43%, 0.80) !important;
+}
+
+.danger-btn {
+  display: flex;
+  padding: 0.5625rem 1.8rem !important;
+  justify-content: space-between;
+  align-items: center !important;
+  border: none !important;
+  cursor: pointer !important;
+
+  border-radius: 0.3125rem;
+  background: hsl(346, 84%, 61%) !important;
+
+  color: #FFF !important;
+  font-family: poppins !important;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+
+  text-transform: uppercase;
+
+  transition: 0.3s ease-in-out all;
+  margin-right: 1.25rem;
+}
+
+.danger-btn:hover {
+  background: hsla(346, 84%, 61%, 0.80) !important;
+}
