@@ -15,7 +15,7 @@ import cartRouter from "./routes/cart";
 import paymentRouter from "./routes/payment";
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 app.use(
   cors({
