@@ -20,12 +20,15 @@ const port = process.env.PORT || 8080;
 app.use(
   cors({
     origin: "*",
-  })
+  }),
 );
 app.use(bodyParser.json());
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
 
 //^ apis
+app.use("/", (_req, res) => {
+  return res.status(200).json({ message: "server is up and running" });
+});
 app.use("/api/auth", authRouter);
 app.use("/api/product", productRouter);
 app.use("/api/user", userRouter);
