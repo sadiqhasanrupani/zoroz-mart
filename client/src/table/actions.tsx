@@ -72,6 +72,8 @@ export default function Actions(props: ActionsProps) {
 
   useEffect(() => {
     handleDeleteSwalPending();
+
+    // eslint-disable-next-line
   }, [deleteCartIsPending]);
 
   return (

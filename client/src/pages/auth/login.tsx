@@ -1,44 +1,44 @@
-import React, { useEffect } from "react";
-import { LoaderFunctionArgs, redirect, useNavigate, useNavigation } from "react-router-dom";
-import { Copy, ShoppingCart } from "lucide-react";
-import { useFormik } from "formik";
-import { useMutation } from "@tanstack/react-query";
-import * as yup from "yup";
+import React, { useEffect } from 'react';
+import { LoaderFunctionArgs, redirect, useNavigate, useNavigation } from 'react-router-dom';
+import { Copy, ShoppingCart } from 'lucide-react';
+import { useFormik } from 'formik';
+import { useMutation } from '@tanstack/react-query';
+import * as yup from 'yup';
 
 //^ lib
-import { getAuthToken } from "@/lib/is-auth";
+import { getAuthToken } from '@/lib/is-auth';
 
 //^ http requests
-import { postLoginHandler } from "@/http/post";
-import { LoginContext } from "@/http/post/types";
+import { postLoginHandler } from '@/http/post';
+import { LoginContext } from '@/http/post/types';
 
 //^shadcn-ui
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 //^ ui-component
-import TextField from "@/components/ui-component/input/TextField";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import ErrorAlert from "@/components/error-message";
-import Spinner from "@/components/ui-component/spinner/Spinner";
+import TextField from '@/components/ui-component/input/TextField';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import ErrorAlert from '@/components/error-message';
+import Spinner from '@/components/ui-component/spinner/Spinner';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const navigation = useNavigation();
 
-  const isLoading = navigation.state === "loading";
+  const isLoading = navigation.state === 'loading';
 
   const schema = yup.object().shape({
-    emailId: yup.string().email("Invalid email address").required("Email is required."),
-    password: yup.string().required("Password is required."),
+    emailId: yup.string().email('Invalid email address').required('Email is required.'),
+    password: yup.string().required('Password is required.'),
   });
 
   const formik = useFormik({
     initialValues: {
-      emailId: "",
-      password: "",
+      emailId: '',
+      password: '',
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -48,10 +48,10 @@ export default function LoginPage() {
 
   const insertUserFormHandler = (
     _event: React.MouseEvent<HTMLButtonElement>,
-    data: { email: string; password: string }
+    data: { email: string; password: string },
   ) => {
-    formik.setFieldValue("emailId", data.email, false);
-    formik.setFieldValue("password", data.password, false);
+    formik.setFieldValue('emailId', data.email, false);
+    formik.setFieldValue('password', data.password, false);
   };
 
   const {
@@ -61,13 +61,13 @@ export default function LoginPage() {
     mutate: loginMutate,
     reset: loginReset,
   } = useMutation<any, any, LoginContext>({
-    mutationKey: ["login"],
+    mutationKey: ['login'],
     mutationFn: postLoginHandler,
     onSuccess: (data) => {
-      toast.success("200", { description: data.message, position: "bottom-right" });
+      toast.success('200', { description: data.message, position: 'bottom-right' });
       const parsedToken = JSON.stringify(data.token);
-      localStorage.setItem("auth_token", parsedToken);
-      navigate("/");
+      localStorage.setItem('auth_token', parsedToken);
+      navigate('/');
     },
   });
 
@@ -87,18 +87,17 @@ export default function LoginPage() {
           {loginError.code !== 422 ? (
             <ErrorAlert
               title={`Error code: ${loginError?.code || 500}`}
-              subTitle={`Message: ${
-                loginError?.info?.error?.message
+              subTitle={`Message: ${loginError?.info?.error?.message
                   ? loginError?.info?.error?.message
-                  : (loginError?.info && loginError?.info?.message) || "Something went wrong"
-              }`}
+                  : (loginError?.info && loginError?.info?.message) || 'Something went wrong'
+                }`}
               onConformed={() => {
                 loginReset();
               }}
               clg={loginError?.info}
             />
           ) : (
-            ""
+            ''
           )}
         </>
       )}
@@ -112,7 +111,7 @@ export default function LoginPage() {
             <CardHeader className="items-center">
               <div className="flex gap-3 text-slate-600 items-center">
                 <ShoppingCart strokeWidth={2} className="w-8 h-8" />
-                <p className="font-medium text-2xl protest-riot">Easy Mart</p>
+                <p className="font-medium text-2xl protest-riot">Zoroz Mart</p>
               </div>
             </CardHeader>
             <Separator />
@@ -142,9 +141,9 @@ export default function LoginPage() {
                       required
                     />
                   </div>
-                  <Button size={"lg"} type="submit" className="flex gap-3 items-center" disabled={loginIsPending}>
+                  <Button size={'lg'} type="submit" className="flex gap-3 items-center" disabled={loginIsPending}>
                     <span>Login</span>
-                    {loginIsPending ? <Spinner /> : ""}
+                    {loginIsPending ? <Spinner /> : ''}
                   </Button>
                 </div>
                 <Separator />
@@ -160,11 +159,11 @@ export default function LoginPage() {
                           <Tooltip>
                             <TooltipTrigger type="button">
                               <Button
-                                size={"icon"}
-                                variant={"outline"}
+                                size={'icon'}
+                                variant={'outline'}
                                 type="button"
                                 onClick={(event) =>
-                                  insertUserFormHandler(event, { email: "johndoe@gmail.com", password: "123456" })
+                                  insertUserFormHandler(event, { email: 'johndoe@gmail.com', password: '123456' })
                                 }
                               >
                                 <Copy className="w-4" />
@@ -184,11 +183,11 @@ export default function LoginPage() {
                           <Tooltip>
                             <TooltipTrigger type="button">
                               <Button
-                                size={"icon"}
-                                variant={"outline"}
+                                size={'icon'}
+                                variant={'outline'}
                                 type="button"
                                 onClick={(event) =>
-                                  insertUserFormHandler(event, { email: "janesmith@gmail.com", password: "123456" })
+                                  insertUserFormHandler(event, { email: 'janesmith@gmail.com', password: '123456' })
                                 }
                               >
                                 <Copy className="w-4" />
@@ -223,7 +222,7 @@ export async function loader(_args: LoaderFunctionArgs) {
     if (!response.ok) {
       const errorData = await response.json();
 
-      const error: any = new Error("An Error occurred while verifying the user.");
+      const error: any = new Error('An Error occurred while verifying the user.');
 
       error.code = response.status;
       error.info = errorData;
@@ -231,7 +230,7 @@ export async function loader(_args: LoaderFunctionArgs) {
       return null;
     }
 
-    return redirect("/");
+    return redirect('/');
   }
 
   return null;
